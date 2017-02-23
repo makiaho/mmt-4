@@ -1,0 +1,11 @@
+/vendor/*
+/src/Controller/ignore/*
+/src/Template/Weeklyreports/ignore/*
+/config/app.php
+/tmp/*
+/logs/*
+/nbproject/private/
+/.settings
+/.buildpath
+/.project
+/.metadata

@@ -1,0 +1,17 @@
+        <!--
+        <ul class="top-bar-section">
+            <li class="right">
+                <?php 
+                	/* This bit of code was commented out because it seemed useless to me
+                	   If it actually does something then remove comment
+                	   - Andy
+                    if($this->request->session()->check('selected_project')){
+                        $selected_project = $this->request->session()->read('selected_project');
+                        $name = $selected_project['project_name'];
+                        echo "<a> $name </a>";
+                    }
+                    */
+                ?>
+            </li>
+        </ul>
+        -->
