@@ -1,0 +1,282 @@
+
+body{
+    padding-top: 50px;
+    background-color: #F1F1F1;
+}
+
+header{
+    position: fixed;
+    width: 100%;
+    top: 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.26);
+    z-index: 10;
+}
+
+header a.toggle{
+    width: 40px;
+    display: inline-block;
+    position: absolute;
+    left: 0px;
+    margin: 6px 0 0 10px;
+}
+
+header a.toggle img{
+    max-width: 100%;
+    display: block;
+}
+
+header .main-bar{
+    height: 50px;
+    background-color: #083e7f;
+    position: relative;
+}
+
+header .title{
+    color: #FFF;
+    font-size: 22px;
+    display: inline-block;
+    padding-top: 8px;
+    vertical-align: top;
+    text-align: center;
+    width: 100%;
+}
+
+nav{
+    display: none;
+    background-color: #4591CF;
+}
+
+nav ul{
+    margin: 0;
+}
+
+ul{
+    list-style-type: none;
+}
+
+nav li a{
+    display: block;
+    color: #FFF;
+    padding: 8px 10px;
+}
+
+nav li a:hover, nav li a:focus{
+    background-color: #dae2ef;
+    color: #083e7f;
+}
+
+.login-form{
+    padding: 10px;
+    top: 20%;
+    width: 100%;
+    position: absolute;
+}
+
+.login-form button{
+    width: 100%;
+    margin-top: 20px;
+}
+
+
+
+
+.link-item-list{
+    padding: 10px;
+}
+
+.link-item-list .item{
+    display: block;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14),0 1px 5px 0 rgba(0,0,0,0.12),0 3px 1px -2px rgba(0,0,0,0.2);
+    min-height: 60px;
+    background-color: #FFF;
+    padding: 10px;
+    color: #1A1A1A;
+}
+
+.link-item-list a.item:hover, .link-item-list a.item:focus{
+    color: #FFF;
+    background-color: #083e7f;
+}
+
+.link-item-list a.item:hover h2, .link-item-list a.item:focus h2{
+    color: #FFF;
+}
+
+.item h2{
+    font-size: 20px;
+    margin: 0 0 4px 0;
+    color: #083e7f;
+}
+
+.item-list .item{
+    padding: 10px;
+    background-color: #FFF;
+    border-bottom: 1px solid #CCCCCC;
+    position: relative;
+}
+
+.item .text-right{
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+}
+
+div.hours, div.hours div{
+    display: inline-block;
+}
+
+div.hours .number{
+    font-size: 18px;
+    color: #083e7f;
+    padding-right: 5px;
+}
+
+div.total-hours{
+    background-color: #083e7f;
+    color: #FFF;
+    font-size: 20px;
+    padding: 10px;
+}
+
+.mobile-hours-form{
+    background-color: #FFF;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14),0 1px 5px 0 rgba(0,0,0,0.12),0 3px 1px -2px rgba(0,0,0,0.2);
+    margin: 10px;
+}
+
+.mobile-hours-form button{
+    width: 100%;
+    margin-top: 15px;
+    margin-bottom: 0;
+}
+
+fieldset{
+    border: none;
+}
+
+fieldset legend{
+    color: #083e7f;
+    font-size: 18px;
+    margin-top: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #083e7f;
+    width: 100%;
+}
+
+
+
+.chart-gallery .chart{
+    width: 100%;
+    display: none;
+}
+
+.chart-gallery .chart.selected{
+    display: block;
+}
+
+
+.chart-limits{
+    padding: 1em;
+    display: none;
+    position: fixed;
+    z-index: 10;
+    width: 100%;
+    background-color: #FFF;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.26);
+}
+
+.chart-limits label{
+    display: none;
+}
+
+.chart-limits button{
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.chart-limits input{
+    font-size: 18px;
+}
+
+.chart-limits .input, .chart-limits .limit-label{
+    display: inline-block;
+    vertical-align: top;
+}
+
+.chart-limits .limit-label{
+    width: 60px;
+}
+
+.chart-limits .input{
+    width: 30%;
+}
+
+.chart-menu{
+    position: relative;
+    
+    
+}
+
+.chart-menu a.chart-nav{
+    width: 60px;
+    position: absolute;
+    z-index: 2;
+    top: 0;
+}
+
+.chart-menu a.chart-nav.prev{
+    left: 0;
+    border-right: 1px solid #FFF;
+}
+
+.chart-menu a.chart-nav.next{
+    right: 0;
+    border-left: 1px solid #FFF;
+}
+
+.chart-menu a.chart-limit-toggle{
+    padding: 12px 60px;
+    width: 100%;
+}
+
+.chart-menu a{
+    display: inline-block;
+    font-size: 18px;
+    padding: 12px;
+    text-align: center;
+    color: #FFF;
+    background-color: #4591CF;
+}
+
+.chart-menu a:hover, .chart-menu a:active{
+    background-color: #dae2ef;
+    color: #083e7f;
+}
+
+div.message {
+	  cursor: pointer;
+	  display: block;
+	  font-weight: normal;
+	  padding: 0.5rem 1.5rem;
+	  transition: height 300ms ease-out 0s;
+	  background-color: #a0d3e8;
+	  color: #626262;
+	  position: fixed;
+	  bottom: 10px;
+          left: 1%;
+	  z-index: 999;
+	  min-height: 50px;
+          width: 98%;
+	}
+
+	
+
+	div.message.error {
+	  background-color: #C3232D;
+	  color: #FFF;
+	}
+
+	div.message.hidden {
+	  height: 0;
+	}

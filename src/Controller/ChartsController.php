@@ -195,7 +195,7 @@ class ChartsController extends AppController
     public function phaseChart() {
         $myChart = $this->Highcharts->createChart();
         $myChart->chart->renderTo = 'phasewrapper';
-        $myChart->chart->type = 'area';
+        $myChart->chart->type = 'line';
         $myChart->title = array(
             'text' => 'Phases',
             'y' => 20,
@@ -351,7 +351,7 @@ class ChartsController extends AppController
     public function testcaseChart() {
     	$myChart = $this->Highcharts->createChart();
     	$myChart->chart->renderTo = 'testcasewrapper';
-    	$myChart->chart->type = 'area';
+    	$myChart->chart->type = 'line';
     
     	$myChart->title = array(
         	'text' => 'Test cases',
@@ -432,7 +432,7 @@ class ChartsController extends AppController
     public function hoursPerWeekChart(){
     	$myChart = $this->Highcharts->createChart();
     	$myChart->chart->renderTo = 'hoursperweekwrapper';
-    	$myChart->chart->type = 'area';
+    	$myChart->chart->type = 'line';
 
     
     	$myChart->title = array(

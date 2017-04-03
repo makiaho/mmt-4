@@ -43,33 +43,35 @@ echo $this->Html->script('jquery-ui.min');
                 $mDate = date("d M Y", mktime(0,0,0, $month, $day, $year));
             }
 			echo $this->Form->button(__('Submit'));
+                        
+            $isAdmin = $this->request->session()->read('is_admin');
        ?>    
     </fieldset>
     <?= $this->Form->end() ?>
 </div>
 
 <script> 
-    // minDate is the date the project was created
+    // minDate is the date the project was created, for admin there is no min date
     // maxDate is the current day
 
        $( "#datepicker1" ).datepicker({
         dateFormat: "MM d, yy",
-        minDate: new Date('<?php echo $mDate; ?>'),
+        minDate: <?php if($isAdmin) { ?> null<?php } else { ?> new Date('<?php echo $mDate; ?>') <?php } ?>,
         maxDate: '0', 
         firstDay: 1,
         showWeek: true,
         showOn: "both",
-        buttonImage: "../../webroot/img/glyphicons-46-calendar.png",
+        buttonImage: '<?= $this->Url->image('glyphicons-46-calendar.png'); ?>',
         buttonImageOnly: true,
         buttonText: "Select date"       
     });
         $( "#datepicker2" ).datepicker({
         dateFormat: "MM d, yy",
-        minDate: new Date('<?php echo $mDate; ?>'),
+        minDate: <?php if($isAdmin) { ?> null<?php } else { ?> new Date('<?php echo $mDate; ?>') <?php } ?>,
         firstDay: 1,
         showWeek: true,
         showOn: "both",
-        buttonImage: "../../webroot/img/glyphicons-46-calendar.png",
+        buttonImage: '<?= $this->Url->image('glyphicons-46-calendar.png'); ?>',
         buttonImageOnly: true,
         buttonText: "Select date"       
     });

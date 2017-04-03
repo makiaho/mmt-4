@@ -9,21 +9,14 @@
 				->where(['user_id =' => $userid, 'project_id =' => $projid])
 				->toArray();
 	
+        $connection = \Cake\Datasource\ConnectionManager::get("default");
+        
 	if (!empty($memid[0]->id)) {
 		$memid = $memid[0]->id;
 
 		// if current weeklyreport's ID is in notifications, remove the row where current member's id is
-		// again, I can't be bothered to try getting along with CakePHP, so I'll use MySQL from PHP
-		if ( $connection = mysqli_connect("localhost", "dummymmtuser", "dummymmtpassword", "mmt") ) {
-			$delete = "DELETE FROM notifications"
-					. " WHERE member_id = $memid"
-					. " AND weeklyreport_id = $wrid";
-
-			if (!mysqli_query($connection, $delete)) {
-				exit;
-			}
-                }        
-		mysqli_close( $connection );
+                $connection->delete('notifications',['member_id' => $memid, 'weeklyreport_id' => $wrid]);
+                             
 	}
         // let's also remove data about unread weeklyreports
         $supervisor = ($this->request->session()->read('selected_project_role') == 'supervisor') ? 1 : 0;
@@ -35,16 +28,8 @@
 		->where(['user_id =' => $userid, 'weeklyreport_id =' => $wrid])
 		->toArray();
 		if ( sizeof($newreps) > 0 ) {
-                    if ( $connection = mysqli_connect("localhost", "user", "pass", "db") ) {
-				$delete = "DELETE FROM newreports"
-                                            . " WHERE user_id = $userid"
-                                            . " AND weeklyreport_id = $wrid";
-
-			if (!mysqli_query($connection, $delete)) {
-				exit;
-			}
-                    }
-                    mysqli_close( $connection );
+                  
+                    $connection->delete('newreports',['user_id' => $userid, 'weeklyreport_id' => $wrid]);
                 }
 	}
 	
@@ -282,21 +267,18 @@
 					$fullname = $userquery[0]->first_name ." ". $userquery[0]->last_name;
 					echo "<div class='messagebox'>";
 					echo "<span class='msginfo'>" . $fullname . " left this comment on " . $query[$i]->date_created->format('d.m.Y, H:i') . "</span><br />";
-					echo $query[$i]->content;
 					
-					// display edit and delete options to owner and admin/SV
-					/* NOTE! edit functionality not implemented in spring 2016. If next teams want to implement it,
-					 * they can uncomment the lines below.
-					 * Note also that database table for comments already contains an attribute "date_modified"
-					 */
+                                        
+                                        echo "<div class='msg-content'><span>" . $query[$i]->content . "</span></div>";
 
+					// display edit and delete options to owner and admin/SV
 					if ( $query[$i]->user_id == $this->request->session()->read('Auth.User.id') || ($admin || $supervisor) ) {
-						echo "<br />";
-						echo "<span class='msginfo'>";
-						// echo $this->Html->link(__('edit'), ['controller' => 'Comments', 'action' => 'edit', $query[$i]->id]);
-						// echo " : : ";
-						echo $this->Html->link(__('delete'), ['controller' => 'Comments', 'action' => 'delete', $query[$i]->id]);
-						echo "</span><br />";
+						echo "<div class='msgaction' data-edit-url='" . $this->Url->build(['controller' => 'Comments', 'action' => 'edit', $query[$i]->id]) . "'>";
+                                                echo $this->Html->link(__('edit'), '#',['class' => 'edit']);
+                                                echo $this->Html->link(__('save'), '#',['class' => 'save']);
+                                                echo $this->Html->link(__('cancel'), '#',['class' => 'cancel']);
+						echo $this->Html->link(__('delete'), ['controller' => 'Comments', 'action' => 'delete', $query[$i]->id],['class' => 'delete']);
+						echo "</div>";
 					}
 					echo "</div>";
 				}

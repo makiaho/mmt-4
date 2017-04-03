@@ -171,10 +171,16 @@ class UsersController extends AppController
         return $this->redirect(['action' => 'index']);
     }
     
-    // this allows anyone to go and create users without logging in
+    public function forgotpassword()
+    {
+        
+    }
+    
+    // this allows anyone to go and create users, or reset forgotten password without logging in
     public function beforeFilter(\Cake\Event\Event $event)
     {
         $this->Auth->allow(['signup']);
+        $this->Auth->allow(['forgotpassword']);
     }
     
     public function isAuthorized($user)

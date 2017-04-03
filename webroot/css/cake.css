@@ -53,18 +53,30 @@
 	.dropdown {
 		position: absolute;
 		right: 2em;
+                z-index: 10000;
+                width: 250px;
+                border: 1px solid #083e7f;
+                box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+                border-radius: 0 0 20px 20px;
 	}
 		.dropdown button {
-			padding: 0.2em 4em;
-			/* border: 2px ridge silver;*/
+			padding: 0.2em 0;
+			width: 100%;
 			border: none;
 			border-radius: 0 0 20px 20px;
 			background-color: #083e7f;
 			margin: 0;
 		}
-			.dropdown button:hover {
-				background-color: #222;
-			}
+                
+                .dropdown.on button{
+                    border-radius: 0;
+                }
+                
+                .dropdown.on .dd-content{
+                    display: block;
+                }
+                    
+                
 			.dropdown button #label {
 				font-family: serif;
 				color: #FFF;
@@ -76,25 +88,18 @@
 				display: block;
 			}
 			
-		.dd-content {
-			z-index: 10000;
+		.dd-content {			
 			display: none;
 			min-height: 200px;
-			left: -3em;
-			right: -3em;
+                        max-width: 100%;
 			padding-top: 1em;
 			padding-bottom: 1.5em;
-			position: absolute;
 			background-color: #f9f9f9;
-			box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-			border-radius: 5px;
-			border: 5px outset dodgerblue;
+			
+			border-radius: 0 0 20px 20px;
 			
 		}
-			/* hover: show dropdown */
-			.dropdown:hover .dd-content {
-				display: block;
-			}
+			
 			
 			.dd-content img {
 				display: block;
@@ -117,7 +122,7 @@
 				margin: 0 auto;
 			}
 				.dd-content ul li {
-					float: left;
+					display: inline-block;
 				}
 				.dd-content ul a {
 					display: block;
@@ -148,7 +153,7 @@
 	 */
 	 #notificationarea {
 		position: absolute;
-		right: 15em;
+		right: 18em;
 	}
 		#notificationarea button {
 			padding: 0.6em 1em;
@@ -159,10 +164,10 @@
 			margin: 0;
 		}
 		.n-content {
-			z-index: 10000;
+			z-index: 10001;
 			display: none;
 			max-height: 420px;
-				overflow: scroll;
+				overflow: auto;
 			left: -6.3em;
 				right: -6.3em;
 			padding-top: 1em;
@@ -219,6 +224,19 @@
 	  margin: 0 auto;
 	  
 	  border-radius: 0 600px 0 0 ;
+	}
+        /* Decreases and removes the margin for smaller screens */
+        @media(max-width: 640px) {
+		#area51 {
+                    width: 100%;
+                    border-radius: 0 0 0 0 ;
+		}
+	}
+        @media(min-width: 641px) and (max-width: 800px) {
+		#area51 {
+                    width: 90%;
+                    border-radius: 0 220px 0 0 ;
+		}
 	}
 		
 	/* For navigations in general */
@@ -288,7 +306,7 @@
 
 	/* All footer related styling */
 	footer {
-		min-height: 200px;
+		
                 background-image: none !important;
                 background-color: #083e7f !important;
                 /* background-color: #19578A !important; */
@@ -320,13 +338,16 @@
 		}
 			#area52 .footerblock {
 				width: 31%;
-				float: left;				
-				margin-left: 1em;
-				border-right: 2px inset #999;
+				display: inline-block;
+                                vertical-align: top;
+				padding-left: 1em;
+				border-left: 2px solid #fff;
 				min-height: 180px;
 			}
 				.footerblock #logoblock {
 					margin-top: 10%;
+                                        padding-left: 0.5em;
+                                        padding-right: 0.5em;
 				}
 				#area52 img {
 					/* float: left; */
@@ -339,9 +360,33 @@
 					font-family: serif;
                                         font-size: 1.4em;
 				}
-				#area52 :last-child {
+				#area52 :first-child {
 					border: none;
 				}
+                                /* Decreases and removes the margin for smaller screens */
+                                @media(max-width: 640px) {
+                                        #area52 {
+                                            width: 100%;
+                                            border-radius: 0 0 0 0 ;
+                                        }
+                                        
+                                        #area52 .footerblock{
+                                            width: 48%;
+                                            min-height: inherit;
+                                        }
+                                        
+                                        #area52 .footerblock:last-child{
+                                            border: none;
+                                        }
+                                        
+                                       
+                                }
+                                @media(min-width: 641px) and (max-width: 800px) {
+                                        #area52 {
+                                            width: 90%;
+                                            border-radius: 0 220px 0 0 ;
+                                        }
+                                }
 
 	/* COMMENT boxes in the weeklyreports' view page
 	*/
@@ -355,6 +400,43 @@
 			color: #09A7DB;
 			font-size: 0.85em;
 		}
+                
+                .msgaction{
+                    padding-top: 0.6em;
+                }
+                
+                .msgaction a{
+                    display: inline-block;
+                    font-size: 0.85em;
+                    margin-right: 0.3em;
+                    color: #FFF;
+                    background-color: #09A7DB;
+                    border-radius: 5px;
+                    padding: 0.1em 0.6em;
+                }
+                
+                .msgaction a:hover{
+                    background-color: #0078a0;
+                    color: #FFF;
+                }
+                
+                /* Cancel and save are not visible in normal mode.
+                Edit, delete and content are not visible in edit mode */
+                .messagebox .msgaction a.cancel, .messagebox .msgaction a.save{
+                    display: none;
+                }
+                
+                .messagebox.edit-mode .msgaction a.cancel, .messagebox.edit-mode .msgaction a.save{
+                    display: inline-block;
+                }
+                
+                .messagebox.edit-mode .msgaction a.edit, .messagebox.edit-mode .msgaction a.delete{
+                    display: none;
+                }
+                
+                .messagebox.edit-mode .msg-content span{
+                    display: none;
+                }
 	
 #faq {
 	margin: 0 auto;
@@ -605,16 +687,27 @@
 	  text-transform: uppercase;
 	  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.26);
 	}
-        #resetStart, #resetEnd {
-          background: #DCDCDC;
-	  border-radius: 5px;
-          border: 1px ridge silver;
-	  margin-top: 1em;
-          padding: 1em;
-          color: black;
-          float: right;  
-	  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.26);
-	}
+        
+        .reset-buttons{
+            text-align: right;
+        }
+        @media(max-width: 640px) {
+            .reset-buttons{
+                text-align: left;
+            }                            
+        }
+        
+        .reset-buttons input{
+            background: #DCDCDC;
+            border-radius: 5px;
+            border: 1px ridge silver;
+            margin-top: 1.3em;
+            padding: 0.5em;
+            color: black;
+            display: inline-block;  
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.26);
+        }
+        
         
 	.form .error-message {
 	  display: block;
@@ -885,6 +978,59 @@
 	table tr:nth-of-type(even) {
 	  background: none;
 	}
+        
+        table.stylized-table{
+            border: 1px solid #CCCCCC;
+        }
+        
+        table.stylized-table td{
+            border: 1px solid #CCCCCC;
+        }
+        
+        table.stylized-table .header td{
+            background-color: #083e7f;
+            color: #FFFFFF;
+        }
+        
+        table.stylized-table .trow:nth-of-type(even){
+            background-color: #f1f5fb;
+        }
+        
+        table.stylized-table .trow:nth-of-type(odd){
+            background-color: #dae5f4;
+        }
+        
+        td.primary-cell{
+            width: 120px;
+            word-break: break-all;
+        }
+        
+        table.stat-table td{
+            text-align: center;
+            padding: 0.5625rem 0;
+            
+        }
+        
+        table.stat-table td.primary-cell{
+            padding-left: 0.625rem;
+            text-align: left;
+        }
+        
+        table.half-width{
+            width: 50%;
+        }
+        
+        .columns.no-padding{
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+        
+        @media(max-width: 640px) {
+            table.half-width {
+                width: 100%;
+            }                             
+        }
+        
 
 	fieldset {
 	  border: none;
@@ -1036,6 +1182,11 @@
 	.chart {
 	  width: 800px;
 	}
+        
+        div.input{
+            overflow: auto;
+        }
+        
 
 	/**
 	 * Req 1 

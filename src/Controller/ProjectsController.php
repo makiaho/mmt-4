@@ -27,8 +27,17 @@ class ProjectsController extends AppController
                 'order' => ['project_name' => 'ASC']
             ];     
         }
+
+        $mobileOptional = false;
+        $referer = \Cake\Routing\Router::parse($this->referer('/', true));
+        
+        if($referer['controller'] === 'Mobile'){
+            $mobileOptional = true;
+        }
+        
         $this->set('projects', $this->paginate($this->Projects));
         $this->set('_serialize', ['projects']);
+        $this->set('mobileOptional',$mobileOptional);
     }
     
     // function that is run when you select a project

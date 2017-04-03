@@ -2,7 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
-
+use Cake\I18n\Time;
 
 class CommentsController extends AppController
 {
@@ -48,22 +48,25 @@ class CommentsController extends AppController
 				for ($i=0; $i < sizeof($member_query); $i++) {
 					$id_array[] = strval( $member_query[$i]->id );
 				}
-				
-				/* CakePHP did not allow me to add multiple rows on a query, so I did the best 
-				 * I could and opted to use "regular" mySQL-functions of PHP
-				 * This can be modified to suit Cake's architecture later, but I can't really be bothered
-				 * - Ä
-				 */
-				if ( $connection = mysqli_connect("localhost", "dummymmtuser", "dummymmtpassword", "mmt") ) {
-					for ($i = 0; $i < sizeof($id_array); $i++) {
-						$insert = "INSERT INTO notifications "
-								. "VALUES (".$maxid.", ". $id_array[$i]. ", " . $wrid . ")";
 
-						if (!mysqli_query($connection, $insert)) {
+                                $connection = \Cake\Datasource\ConnectionManager::get("default");
+                                
+				
+					for ($i = 0; $i < sizeof($id_array); $i++) {
+						
+                                                $result = $connection->insert('notifications',[
+                                                    'comment_id' => $maxid, 
+                                                    'member_id' => $id_array[$i], 
+                                                    'weeklyreport_id' => $wrid
+                                                        ]);
+                                                
+						if (!$result) {
 							exit;
 						}
 					}
-				} else exit;
+                                
+                                
+                                
 
                 $this->Flash->success(__('The comment has been saved.'));
 				
@@ -72,7 +75,6 @@ class CommentsController extends AppController
             } else {
                 $this->Flash->error(__('The comment could not be saved. Please, try again.'));
             }
-			mysqli_close( $connection );
 			return $this->redirect($this->referer());
         }
         
@@ -82,8 +84,31 @@ class CommentsController extends AppController
 	}
 	
 	public function edit($id = null) {
-		$this->Flash->success(__('Editing is not available yet.'));
-		$this->index();
+            
+            if($this->request->is('post')){
+                
+                $content = $this->request->data['content'];
+            
+                $comment = $this->Comments->get($id);
+                
+                if($content !== null && $content !== ''){
+                    $comment->content = $content;
+                    $comment->date_modified = Time::now();
+                    
+                    if ($this->Comments->save($comment)) {
+                        $this->Flash->success(__('The comment has been saved.'));
+                    }else{
+                        $this->Flash->error(__('The comment could not be saved. Please, try again.'));
+                    }
+                }else{
+                    $this->Flash->error(__('The comment can not be empty.'));
+                }
+                
+            }else{
+                $this->Flash->error(__('No comment is sent.'));
+            }
+            
+            $this->index();
 	}
 	
 	public function delete($id = null) {	

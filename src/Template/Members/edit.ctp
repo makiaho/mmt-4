@@ -34,18 +34,29 @@ echo $this->Html->script('jquery-ui.min');
             echo $this->Form->input('project_role', 
                 ['options' => array('developer' => 'developer', 'manager' => 'manager', 'supervisor' => 'supervisor', 'client' => 'client')]);
      
+            ?><div style="overflow: auto"><div class="columns medium-6 no-padding"><?php
+            
             // Using jQuery UI datepicker
             // Starting date
             Cake\I18n\Time::setToStringFormat('MMMM d, yyyy');
             
             echo $this->Form->input('starting_date', ['type' => 'text', 'readonly' => true, 'id' => 'datepicker1']);            
-            ?> <input type="button" value="Clear starting date" id="resetStart" />
-            </br>
+            ?> 
+
             <?php
             // Ending date
             echo $this->Form->input('ending_date', ['type' => 'text', 'readonly' => true, 'id' => 'datepicker2']);
-            ?> <input type="button" value="Clear ending date" id="resetEnd" />
-            </br></br>    
+            ?> 
+            
+            </div><?php
+              
+            ?><div class="columns medium-6 no-padding reset-buttons">
+            
+                <input type="button" value="Clear starting date" id="resetStart" /><br>
+            <input type="button" value="Clear ending date" id="resetEnd" />
+
+            </div></div>
+            
             <?php
             // Fetching from the db the date when the project was created          
             $project_id = $this->request->session()->read('selected_project')['id'];
@@ -63,33 +74,35 @@ echo $this->Html->script('jquery-ui.min');
                 $mDate = date("d M Y", mktime(0,0,0, $month, $day, $year));
             }
             echo $this->Form->button(__('Submit'));
+            
+            $isAdmin = $this->request->session()->read('is_admin');
     ?>           
     </fieldset>
     <?= $this->Form->end() ?>
 </div>
 
 <script> 
-    // minDate is the date the project was created
+    // minDate is the date the project was created, for admin there is no min date
     // maxDate is the current day
 
        $( "#datepicker1" ).datepicker({
         dateFormat: "MM d, yy",
-        minDate: new Date('<?php echo $mDate; ?>'),
+        minDate: <?php if($isAdmin) { ?> null<?php } else { ?> new Date('<?php echo $mDate; ?>') <?php } ?>,
         maxDate: '0', 
         firstDay: 1,
         showWeek: true,
         showOn: "both",
-        buttonImage: "../../webroot/img/glyphicons-46-calendar.png",
+        buttonImage: '<?= $this->Url->image('glyphicons-46-calendar.png'); ?>',
         buttonImageOnly: true,
         buttonText: "Select date"       
     });
         $( "#datepicker2" ).datepicker({
         dateFormat: "MM d, yy",
-        minDate: new Date('<?php echo $mDate; ?>'),
+        minDate: <?php if($isAdmin) { ?> null<?php } else { ?> new Date('<?php echo $mDate; ?>') <?php } ?>,
         firstDay: 1,
         showWeek: true,
         showOn: "both",
-        buttonImage: "../../webroot/img/glyphicons-46-calendar.png",
+        buttonImage: '<?= $this->Url->image('glyphicons-46-calendar.png'); ?>',
         buttonImageOnly: true,
         buttonText: "Select date"       
     });

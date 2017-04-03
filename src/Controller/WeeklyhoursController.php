@@ -128,17 +128,13 @@ class WeeklyhoursController extends AppController
 						$maxid = $query[0]->max;
 
 						// add data about newly saved reports
-						if ( $connection = mysqli_connect("localhost", "dummymmtuser", "dummymmtpassword", "mmt") ) {
-							for ($i = 0; $i < sizeof($svquery); $i++) {
-								$insert = "INSERT INTO newreports "
-										. "VALUES (". $svquery[$i]->user_id .", ". $maxid .")";
-
-								if (!mysqli_query($connection, $insert)) {
-									exit;
-								}
-							}
-							mysqli_close( $connection );
-						} else exit;
+                                                $connection = \Cake\Datasource\ConnectionManager::get("default");
+//						
+                                                for ($i = 0; $i < sizeof($svquery); $i++) {
+							
+                                                       $connection->insert('newreports',['user_id' => $svquery[$i]->user_id, 'weeklyreport_id' => $maxid]);
+                                                    
+						}
 						
                         $this->Flash->success(__('Weeklyreport saved'));
                         

@@ -41,12 +41,13 @@ $cakeDescription = 'MMT';
         '//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js'
     )) ?>
     
+    <?= $this->Html->script('main.js') ?>
+    
     <?= $this->fetch('meta') ?>
     <?= $this->fetch('css') ?>
     <?= $this->fetch('script') ?>
 </head>
-<!-- onmousemove will make any Flash messages disappear -->
-<body onmousemove="$('.message').delay(2500).fadeOut(1000);">
+<body>
 <?php
 	$admin = $this->request->session()->read('is_admin');
 	$supervisor = ( $this->request->session()->read('selected_project_role') == 'supervisor' ) ? 1 : 0;
@@ -159,7 +160,7 @@ $cakeDescription = 'MMT';
 	?>
 	
 	<div class="dropdown">
-		<button>
+		<button title="Click to open">
 			<?php
 				// different label text depending on if logged in or not
 				if ( empty($this->request->session()->read('Auth.User')) ) {
@@ -187,6 +188,8 @@ $cakeDescription = 'MMT';
                                     <li class="buttonIn"><?= $this->Html->link(__('Log in'), ['controller' => 'Users', 'action' => 'login']) ?></li>					
                                     <li class="buttonTop"><?= $this->Html->link(__('Sign up'), ['controller' => 'Users', 'action' => 'signup']) ?></li>
 				</ul>
+                                <br>
+                                <?= $this->Html->link(__('Forgot Password'), ['controller' => 'Users', 'action' => 'forgotpassword']) ?>
 				<?php
 
 				} else {
@@ -305,6 +308,7 @@ $cakeDescription = 'MMT';
 			<ul>
                             <li><a href="http://www.uta.fi/sis/tie/pw/statistics.html" target="_blank">Project Work course - Statistics</a></li>
                             <li><a href="http://www.uta.fi/sis/yhteystiedot/henkilokunta/pekkamakiaho.html" target="_blank">Supervisor's web site</a></li>
+                            <li><?= $this->Html->link(__('Mobile Website'), ['controller' => 'Mobile', 'action' => 'index']) ?> </li>                   
 			</ul>
 
 

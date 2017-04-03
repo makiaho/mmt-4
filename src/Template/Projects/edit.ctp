@@ -44,6 +44,8 @@ echo $this->Html->script('jquery-ui.min');
                 $mDate = date("d M Y", mktime(0,0,0, $month, $day, $year));
             }
 			echo $this->Form->button(__('Submit'));
+                        
+            $isAdmin = $this->request->session()->read('is_admin');
     ?>
     </fieldset>
 	<?= $this->Form->end(); ?>
@@ -52,11 +54,11 @@ echo $this->Html->script('jquery-ui.min');
 <script> 
     /*
      * Req 37:
-     * minDate is the date the project was created
+     * minDate is the date the project was created, no min date if it is admin
      */
     $( "#datepicker" ).datepicker({
         dateFormat: "MM d, yy",
-        minDate: new Date('<?php echo $mDate; ?>'),
+        minDate: <?php if($isAdmin) { ?> null<?php } else { ?> new Date('<?php echo $mDate; ?>') <?php } ?>,
         firstDay: 1,
         showWeek: true,
         showOn: "both",

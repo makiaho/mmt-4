@@ -16,11 +16,11 @@
 <div class="projects view large-9 medium-18 columns content float: left">
     <h3><?= h('Public statistics') ?></h3>
     <h4><?= h('Weekly reports') ?></h4>
-	<table border="1">
+	<table class="stylized-table stat-table">
         <tbody>
-            <tr>
+            <tr class="header">
 		<!-- empty cell -->
-                <td colspan="2"></td>
+                <td class="primary-cell"></td>
 
                 <?php 
                 $min = $this->request->session()->read('statistics_limits')['weekmin'];
@@ -52,8 +52,8 @@
             </tr>
             
             <?php foreach ($projects as $project): ?>
-                <tr>
-                    <td colspan="2"><?= h($project['project_name']) ?></td>
+            <tr class="trow">
+                <td class="primary-cell"><?= h($project['project_name']) ?></td>
                     <?php                    
 			$admin = $this->request->session()->read('is_admin');
 			$supervisor = ( $this->request->session()->read('selected_project_role') == 'supervisor' ) ? 1 : 0;
@@ -123,11 +123,11 @@
             <?php endforeach; ?>
         </tbody>
     </table>
-    <table border="1" style="width:50%;">
+    <table class="stylized-table half-width">
         <h4><?= h('Total numbers of working hours') ?></h4>
         <tbody>
             <?php foreach ($projects as $project): ?>
-                <tr>
+                <tr class="trow">
                     <td><?= h($project['project_name']) ?></td>
                     <td><?= h($project['sum']) ?></td>
                 </tr>
