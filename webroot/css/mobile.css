@@ -254,6 +254,98 @@ fieldset legend{
     color: #083e7f;
 }
 
+
+
+.report-box{
+    margin:10px 5px;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14),0 1px 5px 0 rgba(0,0,0,0.12),0 3px 1px -2px rgba(0,0,0,0.2);
+    background-color: #FFF;
+    color: #1A1A1A;
+}
+
+.report-box .title{
+    padding: 7px;
+    background-color: #083e7f;
+    color: #FFF;
+    font-size: 20px;
+}
+
+.report-item{
+    border-top: 1px solid #CCCCCC;
+    padding: 3px 8px;
+}
+
+.report-item .item-label{
+    color: #083e7f;
+    font-size: 18px;
+    padding: 3px 0;
+}
+
+.report-item .item-desc{
+    
+}
+
+
+
+h4{
+    color: #083e7f;
+    padding-bottom: 0.5rem;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #083e7f;
+}
+
+
+
+table.stylized-table{
+            border: 1px solid #CCCCCC;
+            width: 100%;
+        }
+        
+        table.stylized-table td{
+            border: 1px solid #CCCCCC;
+        }
+        
+        table.stylized-table .header td{
+            background-color: #083e7f;
+            color: #FFFFFF;
+        }
+        
+        table.stylized-table .trow:nth-of-type(even){
+            background-color: #f1f5fb;
+        }
+        
+        table.stylized-table .trow:nth-of-type(odd){
+            background-color: #dae5f4;
+        }
+        
+        td.primary-cell{
+            width: 120px;
+        }
+        
+        table.stat-table td{
+            text-align: center;
+            padding: 0.5625rem 0;
+            
+        }
+        
+        table.stat-table td.primary-cell{
+            padding-left: 0.625rem;
+            text-align: left;
+        }
+        
+div.scroll-table-container{
+    overflow-x: auto;
+}
+
+div.scroll-table-container table td{
+    min-width: 20px;
+}
+
+
+
+
+
+
 div.message {
 	  cursor: pointer;
 	  display: block;

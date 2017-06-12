@@ -15,11 +15,18 @@
     </p>
     <h4>Release notes</h4>
     <p>
-        <h5>Version 3.0 (January 2017)</h5>
-        <p>New Layout, new page (About MMT)<p
+        <h5>Version 4.0 (May 2017)</h5>
+        <p>Mobile Interface</p>
+        <p>Risk metric</p>
+        <p>Trello and Slack Integrations</p>
+        <p>Comment edit functionality</p>
+        <p>Reset forgotten passwords</p>
     </p>
     <h4>Previous versions</h4>
-    
+        <p>
+            Version 4.0 were implemented by Murat Pojon as a TIETS16 programming project 
+            during the spring term of 2017. 
+        </p>
         <p>
             Versions 2.0-2.1 and version 3.0 were implemented by Sirkku Seitamäki as a TIETS16 programming project 
             during the fall term of 2016. 

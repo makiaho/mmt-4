@@ -48,67 +48,37 @@ class WeeklyreportsController extends AppController
         			'conditions' => array('Weeklyreports.project_id' => $project_id) ]);
         }
         
-        // get members because the weeklyhours table has a function we want to use
-        $members = TableRegistry::get('Members');
-        // list of members so we can display usernames instead of id's
-        $memberlist = $members->getMembers($project_id);
-        /*
-        foreach($weeklyreport->weeklyhours as $weeklyhours){
-            foreach($memberlist as $member){
-                // if the id's match add the correct name
-                if($weeklyhours->member_id == $member['id']){
-                   $weeklyhours['member_name'] = $member['member_name'];
-                }
-            }
+ 
+        $metricNames = (new MetricsController())->getMetricNames();
+            
+        foreach($weeklyreport->metrics as $metrics) {        
+            $metrics['metric_description'] = $metricNames[$metrics->metrictype_id];
         }
-    */ /*
-        // get descriptions for the metrics
-        $metrictypes = TableRegistry::get('Metrictypes');
-        $query = $metrictypes
-            ->find()
-            ->select(['id','description'])
-            ->toArray();
         
-        foreach($weeklyreport->metrics as $metrics){
-            foreach($query as $metrictypes){
-                // if the id's match add the correct description
-                if($metrics->metrictype_id == $metrictypes->id){
-                   $metrics['metric_description'] = $metrictypes->description;
-                }
-            }
-        } */
+        //get the weekly risks of the report
+        $risks = array();
         
-        // If metrictypes are chanded, this bit need to be updated.
-        foreach($weeklyreport->metrics as $metrics) {
-            if($metrics->metrictype_id == 1) {
-                $metrics['metric_description'] = "Current phase";
-            }
-            if($metrics->metrictype_id == 2) {
-                $metrics['metric_description'] = "Total number of planned phases";
-            }
-            if($metrics->metrictype_id == 3) {
-                $metrics['metric_description'] = "New requirements";
-            }
-            if($metrics->metrictype_id == 4) {
-                $metrics['metric_description'] = "Requirements in progress";
-            }
-            if($metrics->metrictype_id == 5) {
-                $metrics['metric_description'] = "Closed requirements";
-            }
-            if($metrics->metrictype_id == 6) {
-                $metrics['metric_description'] = "Rejected requirements";
-            }
-            if($metrics->metrictype_id == 7) {
-                $metrics['metric_description'] = "Commits to the source code repository";
-            }
-            if($metrics->metrictype_id == 8) {
-                $metrics['metric_description'] = "Passed test cases";
-            }
-            if($metrics->metrictype_id == 9) {
-                $metrics['metric_description'] = "Total number of test cases";
-            }             
-        }	
+        $risksController = new RisksController();
+        
+        $riskTypes = $risksController->getImpactProbTypes();
+        
+        $currentWeeklyRisks = TableRegistry::get('Weeklyrisks')->find()->where(['weeklyreport_id' => $weeklyreport['id']]);
+        
+        foreach($currentWeeklyRisks as $weeklyRisk){
+            
+            $risk = new \stdClass();
+            
+            $risk->description = TableRegistry::get('Risks')->get($weeklyRisk['risk_id'])['description'];
+            $risk->impact = $riskTypes[$weeklyRisk['impact']];
+            $risk->probability = $riskTypes[$weeklyRisk['probability']];
+            
+            $risks[] = $risk;
+            
+        }
+        
+        
 	// comments stuff
+        $this->set('risks', $risks);
         $this->set('weeklyreport', $weeklyreport);
         $this->set('_serialize', ['weeklyreport']);
     }
@@ -209,5 +179,148 @@ class WeeklyreportsController extends AppController
             $this->Flash->error(__('The weeklyreport could not be deleted. Please, try again.'));
         }
         return $this->redirect(['action' => 'index']);
+    }
+    
+    public function preparemail($id = null){
+         
+        $content = '<div style="max-width:600px">';
+        
+        $weeklyreport = $this->Weeklyreports->get($id, [
+                        'contain' => ['Projects', 'Metrics', 'Workinghours'] ]);
+        
+        $projectId = $weeklyreport->project_id;
+        
+        
+        $tableStyle = 'border="1" style="width:100%;border-collapse:collapse;margin-bottom:20px"';
+        
+        $titleStyle = 'colspan="3" style="text-align:center;font-size:18px;padding:5px"';
+        
+        $project = '<table '.$tableStyle.'>';
+        
+        $rightAlign = 'style="text-align:right"';
+        
+        $project .= '<tr><td>Title</td><td '.$rightAlign.'>'.$weeklyreport->title.'</td></tr>';
+        $project .= '<tr><td>Week</td><td '.$rightAlign.'>'.$weeklyreport->week.'</td></tr>';
+        $project .= '<tr><td>Year</td><td '.$rightAlign.'>'.$weeklyreport->year.'</td></tr>';
+        $project .= '<tr><td>Meetings</td><td '.$rightAlign.'>'.$weeklyreport->meetings.'</td></tr>';
+        $project .= '<tr><td>Requirements link</td><td '.$rightAlign.'>'.$weeklyreport->reqlink.'</td></tr>';
+        $project .= '<tr><td>Challenges, issues, etc.</td><td '.$rightAlign.'>'.$weeklyreport->problems.'</td></tr>';
+        $project .= '<tr><td>Addtitional</td><td '.$rightAlign.'>'.$weeklyreport->additional.'</td></tr>';
+        $project .= '<tr><td>Created on</td><td '.$rightAlign.'>'.$weeklyreport->created_on->format('d.m.Y').'</td></tr>';
+        $project .= '<tr><td>Updated on</td><td '.$rightAlign.'>'.($weeklyreport->updated_on != NULL ? $weeklyreport->updated_on->format('d.m.Y') : '').'</td></tr>';
+        
+        
+        $project .= '</table>';
+
+        $content .= $project;
+        
+        $reporthours = '<table '.$tableStyle.'>';
+        
+        $reporthours .= '<tr><td '.$titleStyle.'>Working Hours for week '.$weeklyreport->week.'</td></tr>';
+        
+        $reporthours .= '<tr><td>Name</td><td>Project Role</td><td>Working hours</td></tr>';
+        
+        $membersList = TableRegistry::get('Members')->find('all',[
+                'conditions' => ['project_id' => $projectId],
+                'contain' => ['Users', 'Projects', 'Workinghours']
+                ])->toArray();
+            
+            
+            foreach($membersList as $member){
+                
+                if($member->project_role === 'manager' || $member->project_role === 'developer'){
+                    
+                    $name = $member->user->full_name;
+                    
+                    $hours = 0;
+                    
+                    $queryForHours = $member->workinghours;
+                    
+                    foreach ($queryForHours as $key) {
+                        if ($weeklyreport->week == $key->date->format('W')) {
+                            if (($weeklyreport->week == 52 && $key->date->format('m') == 01) ||
+                                    ($weeklyreport->week == 5 && $key->date->format('m') == 01) || 
+                                    ($weeklyreport->week == 1 && $key->date->format('m') == 12) ||
+                                    ($weeklyreport->year == $key->date->format('Y'))) {
+                            
+                                    $hours += $key->duration;
+                                }
+                        }
+                    } 
+                    
+                    $reporthours .= '<tr><td>'.$name.'</td><td>'.$member->project_role.'</td><td>'.$hours.'</td></tr>';
+                    
+
+                }
+                
+            }
+        
+        $reporthours .= '</table>';
+        
+        $content .= $reporthours;
+        
+        
+        $metricList = '<table '.$tableStyle.'>';
+        
+        $metricList .= '<tr><td '.$titleStyle.'>Metrics</td></tr>';
+        
+        $metricList .= '<tr><td>Metric type</td><td>Value</td><td>Date</td></tr>';
+        
+        $metricNames = (new MetricsController())->getMetricNames();
+            
+        foreach($weeklyreport->metrics as $metrics) {        
+            
+            $metricList .= '<tr><td>'.$metricNames[$metrics->metrictype_id].'</td><td>'.$metrics->value.'</td><td>'.$metrics->date->format('d.m.Y').'</td></tr>';
+        }
+        
+        $metricList .= '</table>';
+        
+        $content .= $metricList;
+        
+        
+        $currentWeeklyRisks = TableRegistry::get('Weeklyrisks')->find()->where(['weeklyreport_id' => $weeklyreport['id']])->toArray();
+        
+        if(!empty($currentWeeklyRisks)){
+            
+            $risks = '<table '.$tableStyle.'>';
+        
+            $risks .= '<tr><td '.$titleStyle.'>Risks</td></tr>';
+            
+            $risks .= '<tr><td>Risk</td><td>Impact</td><td>Probability</td></tr>';
+
+            $riskTypes = (new RisksController())->getImpactProbTypes();
+
+            foreach($currentWeeklyRisks as $weeklyRisk){
+
+                $riskdescription = TableRegistry::get('Risks')->get($weeklyRisk['risk_id'])['description'];
+                $riskimpact = $riskTypes[$weeklyRisk['impact']];
+                $riskprobability = $riskTypes[$weeklyRisk['probability']];
+
+                $risks .= '<tr><td>'.$riskdescription.'</td><td>'.$riskimpact.'</td><td>'.$riskprobability.'</td></tr>';
+
+            }
+            
+            $risks .= '</table>';
+            
+            $content .= $risks;
+            
+        }
+        
+        $content .= '</div>';
+        
+        return $content;
+    }
+    
+    public function isAuthorized($user)
+    {
+        
+        if ($this->request->action === 'preparemail') 
+        {
+            return true;
+        }
+       
+        
+        
+        return parent::isAuthorized($user);
     }
 }

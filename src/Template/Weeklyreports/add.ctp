@@ -4,7 +4,7 @@
 <div class="weeklyreports form large-8 medium-16 columns content float: left">
     <?= $this->Form->create($weeklyreport) ?>
     <fieldset>
-        <legend><?= __('Add Weeklyreport, Page 1/3') ?></legend>
+        <legend><?= __('Add Weeklyreport, Page 1/4') ?></legend>
         <?php
             $current_weeklyreport = $this->request->session()->read('current_weeklyreport');
             use Cake\I18n\Time;

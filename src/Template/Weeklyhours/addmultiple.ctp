@@ -1,4 +1,4 @@
-<!-- The third page in the weeklyreport form.
+<!-- The fourth page in the weeklyreport form.
      A input is added for all developers managers.
      Pre calculated workinghours are added automatically and if the user
      goes backwards on the page the current values are saved.
@@ -9,7 +9,7 @@
 <div class="weeklyhours form large-6 medium-12 columns content float: left">
     <?= $this->Form->create($weeklyhours) ?>
     <fieldset>
-        <legend><?= __('Preview of working hours, Page 3/3') ?></legend>
+        <legend><?= __('Preview of working hours, Page 4/4') ?></legend>
         <table>
             <tr>
                 <th colspan="2"><?= __('Name - Project role') ?></th> 
@@ -69,21 +69,9 @@
                 //echo "</tr>";
             }
         ?>
-        <div style="margin-top: 2em">
-        	<?php
-        		/* REQ ID 27: navigating back now doesn't require fields  to be filled
-        		* Also positions of buttons slightly altered
-            	* Navigating back to previous page changed to regular link to avoid confusion
-	        	*/
-        		echo $this->Form->button('Submit', ['name' => 'submit', 'value' => 'submit', 'style' => 'float: right;']);
-        	?>
-        	<!-- for positioning back-link -->
-		    <div style="padding-top: 0.7em;">
-			    <?php
-			    	// echo $this->Form->button('Back', ['name' => 'submit', 'value' => 'previous']);
-			        echo $this->Html->link('Previous Page', ['controller' => 'Metrics', 'action' => 'addmultiple']); 
-		    	?>
-	    	</div>
+        <div class="report-nav">
+        	<?= $this->Form->button('Submit', ['name' => 'submit', 'value' => 'submit']);?>
+		<?= $this->Html->link('Previous Page', ['controller' => 'Risks', 'action' => 'addweekly'],['class' => 'link-button']); ?>
         </div>
     </fieldset>
     <?php 

@@ -125,7 +125,7 @@ class WeeklyhoursTable extends Table
     
     // saving the weeklyreport created with the weeklyreportform
     // this also saves the metrics and weeklyhours that belong to the weeklyreport
-    public function saveSessionReport($weeklyreport, $metrics, $weeklyhours){
+    public function saveSessionReport($weeklyreport, $metrics, $risks, $weeklyhours){
         $tableWeeklyreports = TableRegistry::get('Weeklyreports');
         // saving the actual weeklyreport
         if (!$tableWeeklyreports->save($weeklyreport)) {
@@ -140,6 +140,24 @@ class WeeklyhoursTable extends Table
                 return False;
             }
         }
+        
+        //saving the weekly risks
+        $tableWeeklyrisks = TableRegistry::get('Weeklyrisks');
+       
+        foreach($risks as $id => $prob){
+            
+            $weeklyRisk = $tableWeeklyrisks->newEntity();
+            
+            $weeklyRisk['weeklyreport_id'] = $weeklyreport['id'];
+            $weeklyRisk['risk_id'] = $id;
+            $weeklyRisk['probability'] = $prob;
+            
+            if (!$tableWeeklyrisks->save($weeklyRisk)) {
+                return False;
+            }
+            
+        }
+        
         
         $tableWeeklyhours = TableRegistry::get('Weeklyhours');
         foreach($weeklyhours as $temp){

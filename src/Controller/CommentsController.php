@@ -64,12 +64,25 @@ class CommentsController extends AppController
 							exit;
 						}
 					}
-                                
-                                
+                 
+                //This is for sending the comment to slack
+                $slackController = new SlackController();
+
+                $slackData = ['type' => 'comment','details' => [
+                    'user_id' => $comment->user_id,
+                    'text' => $comment->content,
+                    'report_id' => $wrid]]; 
+                
+                $slackResult = $slackController->sendMessage($pid, $slackData);
                                 
 
                 $this->Flash->success(__('The comment has been saved.'));
-				
+			
+                if($slackResult == 'success'){
+                    $this->Flash->success(__('The comment has been sent to slack.'));
+                }else if ($slackResult == 'fail'){
+                    $this->Flash->error(__('The comment could not be sent to slack.'));
+                }
 				
 				
             } else {

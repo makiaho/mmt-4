@@ -14,7 +14,7 @@ class ProjectsController extends AppController
     {
         // list of the projects that should be shown in the front page
         $project_list = $this->request->session()->read('project_list');
-        
+
         if($project_list != NULL){
             $this->paginate = [
                 'conditions' => array('id IN' => $project_list),
@@ -58,6 +58,8 @@ class ProjectsController extends AppController
             $this->request->session()->delete('current_metrics');
             $this->request->session()->delete('current_weeklyhours');
         }  
+        
+       
     }
     
      public function statistics()

@@ -47,7 +47,7 @@ $cakeDescription = 'MMT';
     <?= $this->fetch('css') ?>
     <?= $this->fetch('script') ?>
 </head>
-<body>
+<body <?php if(\Cake\Core\Configure::read('debug')){echo 'class="test-layout"';} ?> >
 <?php
 	$admin = $this->request->session()->read('is_admin');
 	$supervisor = ( $this->request->session()->read('selected_project_role') == 'supervisor' ) ? 1 : 0;
@@ -172,7 +172,10 @@ $cakeDescription = 'MMT';
 			<?= $this->Html->image('arrow.png'); ?>
 		</button>
 		<div class="dd-content">
-			<?= $this->Html->image('icon.png'); ?>
+			<?= 
+                            //$this->Html->image('icon.png');
+                            $this->Custom->profileImage($this->request->session()->read('Auth.User')['id']);
+                        ?>
 			<div id="userinfo">
 				<div class="info">Logged in as</div>
 				<?php
@@ -267,7 +270,12 @@ $cakeDescription = 'MMT';
                                 <li class="navbutton"><?= $this->Html->link(__('Members'), ['controller' => 'Members', 'action' => 'index']) ?></li>
                                 <li class="navbutton"><?= $this->Html->link(__('Reports'), ['controller' => 'Weeklyreports', 'action' => 'index']) ?></li>
                                 <li class="navbutton"><?= $this->Html->link(__('Log time'), ['controller' => 'Workinghours', 'action' => 'index']) ?></li>
-                            <?php } ?>		
+                                <li class="navbutton"><?= $this->Html->link(__('Risks'), ['controller' => 'Risks', 'action' => 'index']) ?></li>
+                            <?php } ?>	
+                            <?php if( in_array($this->request->session()->read('selected_project_role'),['manager','admin','supervisor'])): ?>
+                                <li class="navbutton"><?= $this->Html->link(__('Slack'), ['controller' => 'Slack', 'action' => 'index']) ?></li>
+                                <li class="navbutton"><?= $this->Html->link(__('Trello'), ['controller' => 'Trello', 'action' => 'index']) ?></li>
+                            <?php endif; ?>
                             <li class="navbutton"><?= $this->Html->link(__('Charts'), ['controller' => 'Charts', 'action' => 'index']) ?></li>
                             <?php  
                         } ?>

@@ -388,4 +388,57 @@ class ChartsTable extends Table
         
         return $weeklyhourData;
     }
+    
+    
+    public function riskData($idlist, $projectId){
+        
+        $risks = TableRegistry::get('Risks');
+        $weeklyRisks = TableRegistry::get('Weeklyrisks');
+        
+        $data = array();
+        
+        $projectRisks = $risks->find()->where(['project_id' => $projectId])->toArray();
+
+        
+        foreach($projectRisks as $projectRisk){
+        
+            $item = array();
+            
+            $item['name'] = $projectRisk->description;
+            
+            $probability = array();
+            $impact = array();
+            $combined = array();
+            
+            foreach($idlist as $temp){
+            
+                $query = $weeklyRisks
+                        ->find()
+                        ->where(['weeklyreport_id =' => $temp, 'risk_id' => $projectRisk->id])
+                        ->toArray();
+                
+                $probTemp = 0;
+                $impactTemp = 0;
+                
+                if(!empty($query)){
+                    $probTemp = $query[0]->probability;
+                    $impactTemp = $query[0]->impact;
+
+                }
+                
+                $probability[] = $probTemp;
+                $impact[] = $impactTemp;
+                $combined[] = $probTemp * $impactTemp;
+            }
+            
+            $item['probability'] = $probability;
+            $item['impact'] = $impact;
+            $item['combined'] = $combined;
+            
+            $data[] = $item;
+
+        }
+        
+        return $data;
+    }
 }

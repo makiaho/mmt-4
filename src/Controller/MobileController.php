@@ -139,6 +139,9 @@ class MobileController extends AppController
         $weeklyhourChart = $chartController->weeklyhourChart();
         $hoursPerWeekChart = $chartController->hoursPerWeekChart();
         $reqPercentChart = $chartController->reqPercentChart();
+        $risksProbChart = $chartController->risksProbChart();
+        $risksImpactChart = $chartController->risksImpactChart();
+        $risksCombinedChart = $chartController->risksCombinedChart();
         $derivedChart = $chartController->derivedChart();
         
         // Get all the data for the charts, based on the chartlimits
@@ -151,6 +154,7 @@ class MobileController extends AppController
         $hoursData = $chartController->Charts->hoursData($project_id);
         $hoursperweekData = $chartController->Charts->hoursPerWeekData($project_id, $weeklyreports['id'], $weeklyreports['weeks']);
         $weeklyhourData = $chartController->Charts->weeklyhourAreaData($weeklyreports['id']);
+        $riskData = $chartController->Charts->riskData($weeklyreports['id'], $project_id);
         
         // Insert the data in to the charts, one by one
         // phaseChart
@@ -253,6 +257,47 @@ class MobileController extends AppController
             'data' => $reqData['rejected']
         );
         $reqPercentChart->chart['width'] = null;
+        
+        
+        // risksProbChart
+        $risksProbChart->xAxis->categories = $weeklyreports['weeks'];
+        
+        foreach ($riskData as $risk){
+            
+            $risksProbChart->series[] = array(
+                'name' => $risk['name'],
+                'data' => $risk['probability']
+            );
+        
+        }
+        
+        
+        // risksImpactChart
+        $risksImpactChart->xAxis->categories = $weeklyreports['weeks'];
+        
+        foreach ($riskData as $risk){
+            
+            $risksImpactChart->series[] = array(
+                'name' => $risk['name'],
+                'data' => $risk['impact']
+            );
+        
+        }
+        
+        
+        // risksCombinedChart
+        $risksCombinedChart->xAxis->categories = $weeklyreports['weeks'];
+        
+        foreach ($riskData as $risk){
+            
+            $risksCombinedChart->series[] = array(
+                'name' => $risk['name'],
+                'data' => $risk['combined']
+            );
+        
+        }
+        
+        
               
         // chart for derived metrics
         $derivedChart->xAxis->categories = $weeklyreports['weeks'];
@@ -267,8 +312,201 @@ class MobileController extends AppController
         $derivedChart->chart['width'] = null;
         
         // This sets the charts visible in the actual charts page "Charts/index.php"
-        $this->set(compact('phaseChart', 'reqChart', 'commitChart', 'testcaseChart', 'hoursChart', 'weeklyhourChart', 'hoursPerWeekChart', 'reqPercentChart', 'derivedChart'));
+        $this->set(compact('phaseChart', 'reqChart', 'commitChart', 'testcaseChart', 'hoursChart', 'weeklyhourChart', 'hoursPerWeekChart', 'reqPercentChart', 'risksProbChart', 'risksImpactChart', 'risksCombinedChart', 'derivedChart'));
 
+    }
+    
+    public function report()
+    {
+        $project_id = $this->request->session()->read('selected_project')['id'];
+        
+        $report = TableRegistry::get('Weeklyreports')->find('all',[
+            'conditions' => ['project_id' => $project_id],
+            'order' => ['year' => 'DESC', 'week' => 'DESC'],
+            'contain' => ['Projects', 'Metrics', 'Workinghours']
+                ])->first();
+         
+        $members = array();
+        
+        //get the weekly risks of the report
+        $risks = array();
+        
+        if($report !== null){
+            
+            $metricNames = (new MetricsController())->getMetricNames();
+            
+            foreach($report->metrics as $metrics) {
+                
+                $metrics['metric_description'] = $metricNames[$metrics->metrictype_id];
+            }	
+
+            $risksController = new RisksController();
+
+            $riskTypes = $risksController->getImpactProbTypes();
+
+            $currentWeeklyRisks = TableRegistry::get('Weeklyrisks')->find()->where(['weeklyreport_id' => $report['id']]);
+
+            foreach($currentWeeklyRisks as $weeklyRisk){
+
+                $risk = new \stdClass();
+
+                $risk->description = TableRegistry::get('Risks')->get($weeklyRisk['risk_id'])['description'];
+                $risk->impact = $riskTypes[$weeklyRisk['impact']];
+                $risk->probability = $riskTypes[$weeklyRisk['probability']];
+
+                $risks[] = $risk;
+
+            }
+            
+            
+            
+            $membersList = TableRegistry::get('Members')->find('all',[
+                'conditions' => ['project_id' => $project_id],
+                'contain' => ['Users', 'Projects', 'Workinghours']
+                ])->toArray();
+            
+            
+            foreach($membersList as $member){
+                
+                if($member->project_role === 'manager' || $member->project_role === 'developer'){
+                    
+                    $name = $member->user->full_name;
+                    
+                    $hours = 0;
+                    
+                    $queryForHours = $member->workinghours;
+                    
+                    foreach ($queryForHours as $key) {
+                        if ($report->week == $key->date->format('W')) {
+                            if (($report->week == 52 && $key->date->format('m') == 01) ||
+                                    ($report->week == 5 && $key->date->format('m') == 01) || 
+                                    ($report->week == 1 && $key->date->format('m') == 12) ||
+                                    ($report->year == $key->date->format('Y'))) {
+                            
+                                    $hours += $key->duration;
+                                }
+                        }
+                    } 
+                    
+                    $obj = new \stdClass();
+                    
+                    $obj->name = $name;
+                    $obj->hours = $hours;
+                    $obj->role = $member->project_role;
+                    
+                    $members[] = $obj;
+                }
+                
+            }
+            
+        }
+        
+        $this->set('report', $report);
+        $this->set('risks', $risks);
+        $this->set('members', $members);
+    }
+    
+    public function stat(){
+        
+        // get the limits from the sidebar if changes were submitted
+        if ($this->request->is('post')) {
+            $data = $this->request->data;
+            
+            /* FIX: editing limits on Public Statistics now behaves like a decent UI
+             */
+            // fetch values using helpers
+            $min = $data['weekmin'];
+            $max = $data['weekmax'];
+		$year = $data['year'];
+            
+            // correction for nonsensical values for week numbers
+            if ( $min < 1 )  $min = 1;
+            if ( $min > 53 ) $min = 53;
+            if ( $max < 1 )  $max = 1;
+            if ( $max > 53 ) $max = 53;
+            if ( $max < $min ) {
+            	$temp = $max;
+            	$max = $min;
+            	$min = $temp;
+            }
+			
+            $statistics_limits['weekmin'] = $min;
+            $statistics_limits['weekmax'] = $max;
+            $statistics_limits['year'] = $year;
+            
+            $this->request->session()->write('statistics_limits', $statistics_limits);
+
+        }
+        
+        // current default settings
+        if(!$this->request->session()->check('statistics_limits')){
+            $time = Time::now();
+            $week = date('W');
+            $month = date('m');
+            // weekmin will be the current week - 10
+            // weekmax will be the current week + 1
+            // exceptions when the current week is 1-10 or 53
+            
+            // weeks 2-10
+            if ($week >= 2 && $week <= 10) {
+                $weekmin = 1;
+                $weekmax = $week+1;               
+            }
+            // week 1
+            elseif ($week == 1) {
+                $weekmin = 43;
+                $weekmax = 53;        
+            }
+            elseif ($week == 53) {
+                $weekmin = $week-10;
+                $weekmax = $week;                
+            }
+            // weeks 11-52
+            else {
+                $weekmin = $week-10;
+                $weekmax = $week+1;         
+            }
+            // these initial limits are arbitrary so change freely if needed
+            $statistics_limits['weekmin'] = $weekmin;
+            $statistics_limits['weekmax'] = $weekmax;
+            
+            $year = $time->year;
+            $diffYear = $year - 1 ; 
+            
+            if (($week == 1 && $month == 01) || 
+                ($week == 52 && $month == 01) || 
+                ($week == 53 && $month == 01) ) {
+                $statistics_limits['year'] = $diffYear;
+            }
+            else {
+                $statistics_limits['year'] = $time->year;
+            }
+                    
+            $this->request->session()->write('statistics_limits', $statistics_limits);
+        }
+
+        // load the limits to a variable
+        $statistics_limits = $this->request->session()->read('statistics_limits');
+        // function in the projects table "ProjectsTable.php"
+        // return the list of public projects
+        
+        $projectsTable = TableRegistry::get('Projects');
+        
+        $publicProjects = $projectsTable->getPublicProjects();
+        $projects = array();
+        // the weeklyreport weeks and the total weeklyhours duration is loaded for all projects
+        // functions in "ProjectsTable.php"
+        foreach($publicProjects as $project){
+            $project['reports'] = $projectsTable->getWeeklyreportWeeks($project['id'], 
+            $statistics_limits['weekmin'], $statistics_limits['weekmax'], $statistics_limits['year']);
+            $project['duration'] = $projectsTable->getWeeklyhoursDuration($project['id']);
+            $project['sum'] = $projectsTable->getHoursDuration($project['id']);
+            $projects[] = $project;
+        }
+        // the projects and their data are made visible in the "statistics.php" page
+        $this->set(compact('projects'));
+        $this->set('_serialize', ['projects']);
+        
     }
     
     public function logout()
@@ -297,6 +535,7 @@ class MobileController extends AppController
     {   
 
         $this->Auth->allow(['index']);
+        $this->Auth->allow(['stat']);
         
         if($this->Auth->user()){
             
@@ -382,7 +621,7 @@ class MobileController extends AppController
                 $query = TableRegistry::get('Projects')
                     ->find()
                     ->select(['is_public'])
-                    ->where(['id' => $this->request->pass[0]])
+                    ->where(['id' => $id])
                     ->toArray();          
                 if($query[0]->is_public == 1){
                     return True;

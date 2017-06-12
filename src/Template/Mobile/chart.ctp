@@ -82,6 +82,24 @@ $this->assign('title','Charts');
 	</div>
     </div>
     
+    <div class="chart">
+        <div id="risksprobrapper">
+            <?php echo $this->Highcharts->render($risksProbChart, 'risksProbChart')?>
+        </div>
+    </div>
+
+    <div class="chart">
+        <div id="risksimpactwrapper">
+		<?php echo $this->Highcharts->render($risksImpactChart, 'risksImpactChart'); ?>
+	</div>
+    </div>
+
+    <div class="chart">
+        <div id="riskscombinedwrapper">
+		<?php echo $this->Highcharts->render($risksCombinedChart, 'risksCombinedChart'); ?>
+	</div>
+    </div>
+    
     <?php 
     // The chart for derived metrics is visible only to admins
     $admin = $this->request->session()->read('is_admin');

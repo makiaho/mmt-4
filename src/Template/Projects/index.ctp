@@ -24,7 +24,7 @@
             <?php } ?>
             <li><?= $this->Html->link(__('Public statistics'), ['controller' => 'Projects', 'action' => 'statistics']) ?> </li>
             <li><?= $this->Html->link(__('FAQ'), ['controller' => 'Projects', 'action' => 'faq']) ?> </li>
-            <li><?= $this->Html->link(__('About MMT'), ['controller' => 'Projects', 'action' => 'about']) ?> </li>
+            <li><?= $this->Html->link(__('About MMT 4.0'), ['controller' => 'Projects', 'action' => 'about'],['class' => 'link-highlight']) ?> </li>
             <?php if ($admin) { ?>
                 <li><?= $this->Html->link(__('All feedback'), ['controller' => 'Notes', 'action' => 'index']) ?></li> 
             <?php } ?>

@@ -182,7 +182,7 @@ class MetricsController extends AppController
                     // based on the last form data we either move back or forward in the form
                     if($this->request->data['submit'] == "next"){
                         return $this->redirect(
-                            ['controller' => 'Weeklyhours', 'action' => 'addmultiple']
+                            ['controller' => 'Risks', 'action' => 'addweekly']
                         );
                     }
                     else{
@@ -197,14 +197,24 @@ class MetricsController extends AppController
                 }
             }
         }
+        
+        $metricNames = $this->getMetricNames();
+        
+        $trelloTable = TableRegistry::get('Trello');
+        
+        $trello = $trelloTable->find('all', [
+            'conditions' => ['project_id' => $project_id],
+            'contain' => ['Trellolinks'
+                ]])->first();
+        
         $projects = $this->Metrics->Projects->find('list', ['limit' => 200]);
         $metrictypes = $this->Metrics->Metrictypes->find('list', ['limit' => 200]);
         $weeklyreports = $this->Metrics->Weeklyreports->find('list', ['limit' => 200, 'conditions' => array('Weeklyreports.project_id' => $project_id)]);
-        $this->set(compact('metric', 'projects', 'metrictypes', 'weeklyreports'));
+        $this->set(compact('metric', 'projects', 'metrictypes', 'weeklyreports','metricNames','trello'));
         $this->set('_serialize', ['metric']);
     }
     
-        public function edit($id = null)
+    public function edit($id = null)
     {   
         // the metric can only be edited if its from the current project
         $project_id = $this->request->session()->read('selected_project')['id'];
@@ -332,6 +342,24 @@ class MetricsController extends AppController
         return $this->redirect(['action' => 'index']);
         
     }
+    
+    public function getMetricNames(){
+        
+        $names = array();
+        
+        $names[1] = 'Current phase';
+        $names[2] = 'Total number of planned phases';
+        $names[3] = 'New requirements';
+        $names[4] = 'Requirements in progress';
+        $names[5] = 'Closed requirements';
+        $names[6] = 'Rejected requirements';
+        $names[7] = 'Commits to the source code repository';
+        $names[8] = 'Passed test cases';
+        $names[9] = 'Total number of test cases';
+        
+        return $names;
+    }
+    
     
     public function isAuthorized($user)
     {   

@@ -104,7 +104,7 @@
 			.dd-content img {
 				display: block;
 				margin: 0 auto;
-				height: 70%;
+				width: 100px;
 			}
 			
 			.dd-content #userinfo {
@@ -450,6 +450,297 @@
 	font-size: 0.8em;
 		font-family: monospace;
 }
+
+.image-cell{
+    width: 60px !important;
+}
+
+.image-cell img{
+    height: 40px;
+    margin: -0.56rem -0.6rem;
+
+}
+
+.portrait img{
+    border: 1px solid #ebebec;
+    width: 120px;
+}
+
+
+
+.member-table .member-cell{
+    display: table-cell;
+    vertical-align: top;
+}
+
+.member-table .member-cell.portrait{
+    width: 120px;
+    padding-left: 15px;
+    padding-top: 10px;
+}
+
+
+
+table.cell-align-top td{
+    vertical-align: top;
+}
+
+
+.report-nav button{
+    float: right !important;
+}
+
+form a.link-button{
+    text-transform: uppercase;
+    border-radius: 5px;
+    border: 1px ridge silver;
+    margin-top: 1em;
+    display: inline-block;
+    padding: 1rem 2rem 1.0625rem 2rem;
+    line-height: normal;
+    background-color: #083e7f;
+    color: #FFF;
+    transition: background-color 300ms ease-out;
+}
+
+form a.link-button:hover, form a.link-button:focus{
+    background: #000 !important;
+    box-shadow: none;
+    color: #FFF !important;
+}
+
+
+
+
+a.trello-link-box{
+    background-color: #0067A3;
+    border-radius: 3px;
+    color: #fff;
+    display: inline-block;
+    padding: 10px;
+    font-weight: bold;
+    height: 100px;
+    width: 300px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+a.trello-link-box:hover{
+    color: #fff;
+    background-color: #005B8F;
+}
+
+
+
+.trello-form{
+    background-color: #E2E4E6;
+    border-radius: 3px;
+    padding-bottom: 10px;
+}
+
+.trello-form.loading form{
+    display: none;
+}
+
+.trello-form form{
+    padding: 15px 10px;
+    display: block;
+}
+
+.trello-form .form-title{
+    padding: 5px;
+    background-color: #0067A3;
+    color: #FFF;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 3px 3px 0 0;
+}
+
+.trello-form .form-item{
+    margin-bottom: 20px;
+}
+
+.trello-form .form-item .form-label, .trello-form .form-item .description{
+    display: inline-block;
+    vertical-align: top;
+}
+
+.trello-form .form-item .form-label{
+    width: 18%;
+    text-align: right;
+    padding-top: 6px;
+    font-weight: bold;
+    padding-right: 3px;
+}
+
+.trello-form .form-item .description{
+    width: 80%;
+}
+
+.trello-form .form-item .description input{
+    box-shadow: 0 1px 2px rgba(0,0,0,.23);
+    border: none;
+    background-color: #FFF;
+    border-radius: 3px;
+    margin-bottom: 5px;
+}
+
+.trello-form .form-item .description input:focus{
+    box-shadow: 0 1px 4px rgba(0,0,0,.33);
+}
+
+.trello-form .form-message{
+    padding: 15px 10px 0 10px;
+}
+
+.trello-form .info-text{
+    box-shadow: 0 1px 2px rgba(0,0,0,.23);
+    border-radius: 3px;
+    padding: 6px 10px;
+    background-color: #EEE;  
+}
+
+.trello-form .form-submit input, .trello-form .form-submit a{
+    
+    color: #FFF;
+    font-weight: bold;
+    border-radius: .3em;
+    display: inline-block;
+    padding: 0.7em 1.8em;
+    border: none;
+    line-height: normal;  
+}
+
+.trello-form .form-submit input.save, .trello-form .form-submit a.save{
+    box-shadow: 0 2px 0 #3f6f21;
+    background-color: #60BA4D;
+}
+
+.trello-form .form-submit input.delete, .trello-form .form-submit a.delete{
+    box-shadow: 0 2px 0 #8C432B;
+    background-color: #d9534f;
+}
+
+.trello-form .form-submit input.save:hover, .trello-form .form-submit a.save:hover{
+    background-color: #539C3B;
+}
+
+.trello-form .form-submit input.delete:hover, .trello-form .form-submit a.delete:hover{
+    background-color: #c9302c;
+}
+
+
+
+
+.trello-form .form-submit.left-space{
+    margin-left: 18%;
+}
+
+.trello-form .form-submit.top-space{
+    margin-top: 10px;
+}
+
+.trello-form .form-submit.wide input{
+    min-width: 150px;
+}
+
+.trello-form .form-submit input:hover{
+    background-color: #539C3B;
+}
+
+
+
+
+ .select-list{
+    background-color: #0067A3;
+    border-radius: 3px;
+    padding: 7px;
+    margin-top: 10px;
+}
+
+ .select-list .title{
+    color: #FFF;
+    font-weight: bold;
+}
+
+.select-list .title .select-desc{
+    display: none;
+}
+
+.select-list.current-select .title .select-desc{
+    display: inline;
+}
+
+.selectable{
+    border-radius: 3px;
+    display: inline-block;
+    padding: 4px 8px;
+    background-color: #4E97C2;
+    color: #FFF;
+    font-weight: bold;
+    box-shadow: 0 1px 2px rgba(0,0,0,.23);
+    margin: 3px;
+    cursor: pointer;
+}
+
+.selectable.selected{
+    background-color: #539C3B;
+}
+
+
+.trello-matches .match{
+    border-radius: 3px;
+    display: inline-block;
+    background-color: #539C3B;
+    color: #FFF;
+    font-weight: bold;
+    box-shadow: 0 1px 2px rgba(0,0,0,.23);
+    margin: 3px;
+}
+
+.trello-matches .match div{
+    padding: 4px 8px;
+    border-right: 1px solid #FFF;
+    float: left;
+}
+
+.trello-matches .match div.close{
+    border-right: none;
+    background-color: #c9302c;
+    border-radius: 0 3px 3px 0;
+    cursor: pointer;
+}
+
+
+.requirement-message{
+    padding: 5px;
+    border: 1px solid #15848F;
+    color: #15848F;
+    background-color: #dae2ef;
+    margin-top: -8px;
+    margin-bottom: 10px;
+}
+
+.requirement-message a{
+    display: inline-block;
+    background-color: #083e7f;
+    color: #FFF;
+    padding: 3px 6px;
+    border-radius: 3px;
+    transition: background-color 300ms ease-out;
+}
+
+.requirement-message a:hover{
+    background-color: #000;
+    color: #FFF;
+}
+
+a.link-highlight{
+    border: 2px solid #083e7f !important;
+    color: #083e7f !important;
+    font-weight: bold !important;
+}
+
 
 	/*
 		.title-area {
@@ -1221,3 +1512,48 @@
 	  color: #C3232D;
           display:inline;
 	}
+        
+        
+        
+        /*Different colors for test layout*/
+        
+        body.test-layout{
+            background-image: url('../img/tausta_test.jpg');
+        }
+        
+        .test-layout .dropdown{
+            border: 1px solid #2e2e2e;
+        }
+        
+        .test-layout .dropdown button{
+            background-color: #2e2e2e;
+        }
+        
+        .test-layout #notificationarea button {
+            background-color: #2e2e2e;
+	}
+        
+        .test-layout #left-title {
+		background-color: #2e2e2e;
+
+	}
+
+        .test-layout footer {
+            background-color: #2e2e2e !important;             
+	}
+
+        .test-layout button {
+            background: #2e2e2e;
+	}
+        
+        .test-layout form a.link-button{
+            background: #2e2e2e;
+        }
+        
+        .test-layout #navtop ul a {
+            background-color: #2e2e2e;
+	}
+	.test-layout #navtop ul li a:hover {
+            background-color: #c7c7c7;
+            color: #2e2e2e;
+        }

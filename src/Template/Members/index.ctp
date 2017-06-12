@@ -17,6 +17,7 @@
     <table cellpadding="0" cellspacing="0">
         <thead>
             <tr>
+                <th class="image-cell"></th>
                 <th colspan="2"><?= __('Name') ?></th>
                 <th><?= $this->Paginator->sort('project_role') ?></th>
                 <th><?= __('Working hours') ?></th>
@@ -28,6 +29,9 @@
             <?php foreach ($members as $member): ?>
 
             <tr>
+                <td class="image-cell">
+                    <?= $this->Custom->profileImage($member->user_id); ?>
+                </td>
                 <td colspan="2"><?= $member->has('user') ? $this->Html->link($member->user->first_name . " ". $member->user->last_name, ['controller' => 'Members', 'action' => 'view', $member->id]) : '' ?></td>  
                 <td><?= h($member->project_role) ?></td><?php
                 // Get the sum of workinghours for a member who has working hours              
@@ -62,6 +66,7 @@
             
             <?php if (!empty($member->project_id)) { ?>
             <tr style="border-top: 2px solid black;">
+                <td></td>
                 <td colspan="2"><b><?= __('Total') ?></b></td>
                 <td></td>
                 <td><b><?= h($total) ?></b></td>

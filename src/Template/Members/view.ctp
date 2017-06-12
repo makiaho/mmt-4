@@ -17,35 +17,43 @@
 </nav>
 <div class="members view large-8 medium-16 columns content float: left">
     <h3><?= h($member->user->first_name . " ". $member->user->last_name) ?></h3>
-    <table class="vertical-table">
-        <tr>
-            <th><?= __('Project Role') ?></th>
-            <td><?= h($member->project_role) ?></td>
-        </tr>
-        <tr>
-            <th><?= __('Starting Date') ?></th>
-            <td><?php 
-			if ($member->starting_date != NULL)
-				echo h($member->starting_date->format('d.m.Y')); 
-			?></td>
-        </tr>
-        <tr>
-            <th><?= __('Ending Date') ?></th>
-            <td><?php 
-			if ($member->ending_date != NULL)
-				echo h($member->ending_date->format('d.m.Y')); 
-			?></td>
-        </tr>
-        <tr>
-            <?php
+    <div class="member-table">
+        <div class="member-cell">
+                <table class="vertical-table">
+                    <tr>
+                        <th><?= __('Project Role') ?></th>
+                        <td><?= h($member->project_role) ?></td>
+                    </tr>
+                    <tr>
+                        <th><?= __('Starting Date') ?></th>
+                        <td><?php 
+                                    if ($member->starting_date != NULL)
+                                            echo h($member->starting_date->format('d.m.Y')); 
+                                    ?></td>
+                    </tr>
+                    <tr>
+                        <th><?= __('Ending Date') ?></th>
+                        <td><?php 
+                                    if ($member->ending_date != NULL)
+                                            echo h($member->ending_date->format('d.m.Y')); 
+                                    ?></td>
+                    </tr>
+                    <tr>
+                        <?php
 
-            // Removed link from the email address 
-            ?>
-            <th><?= __('Email') ?></th>
-            <td><?= $member->user->email ?></td>
-                
-        </tr>
-    </table>
+                        // Removed link from the email address 
+                        ?>
+                        <th><?= __('Email') ?></th>
+                        <td><?= $member->user->email ?></td>
+
+                    </tr>
+                </table>
+            </div>
+            <div class="member-cell portrait">
+                    <?= $this->Custom->profileImage($member->user_id); ?>
+            </div>
+    </div>
+    
     <div class="related">
         <?php if (!empty($member->workinghours)): ?>
         <h4><?= __('Working hours') ?></h4>

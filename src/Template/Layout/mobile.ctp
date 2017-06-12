@@ -53,7 +53,7 @@ $project_role = $this->request->session()->read('selected_project_role');
                         <?= $this->Html->link(__('Home'), ['controller' => 'Mobile', 'action' => 'index']) ?>
                     </li>
                     
-                    <?php if(in_array($this->template, ['project','addhour','chart']) ){ ?>                 
+                    <?php if(in_array($this->template, ['project','addhour','chart', 'report']) ){ ?>                 
                     <li>
                         <?= $this->Html->link(__('Members'), ['controller' => 'Mobile', 'action' => 'project']) ?>
                     </li>
@@ -63,12 +63,23 @@ $project_role = $this->request->session()->read('selected_project_role');
                     </li>
                     <?php } ?>
                     <li>
+                        <?= $this->Html->link(__('Report'), ['controller' => 'Mobile', 'action' => 'report']) ?>
+                    </li>
+                    <li>
                         <?= $this->Html->link(__('Charts'), ['controller' => 'Mobile', 'action' => 'chart']) ?>
                     </li>
                     <?php } ?>
                     
                     <li>
                         <?= $this->Html->link(__('Main Website'), ['controller' => 'Projects', 'action' => 'index']) ?>
+                    </li>
+                    
+                    <li>
+                        <?= $this->Html->link(__('Public Statistics'), ['controller' => 'Mobile', 'action' => 'stat']) ?>
+                    </li>
+                    
+                    <li>
+                        <?= $this->Html->link(__('Course Statistics'), 'http://www.uta.fi/sis/tie/pw/statistics.html') ?>
                     </li>
                     
                     <?php if($this->request->session()->read('Auth.User')) { ?>

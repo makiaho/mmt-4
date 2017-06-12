@@ -57,6 +57,9 @@ class ChartsController extends AppController
         $weeklyhourChart = $this->weeklyhourChart();
         $hoursPerWeekChart = $this->hoursPerWeekChart();
         $reqPercentChart = $this->reqPercentChart();
+        $risksProbChart = $this->risksProbChart();
+        $risksImpactChart = $this->risksImpactChart();
+        $risksCombinedChart = $this->risksCombinedChart();
         $derivedChart = $this->derivedChart();
         
         // Get all the data for the charts, based on the chartlimits
@@ -69,6 +72,7 @@ class ChartsController extends AppController
         $hoursData = $this->Charts->hoursData($project_id);
         $hoursperweekData = $this->Charts->hoursPerWeekData($project_id, $weeklyreports['id'], $weeklyreports['weeks']);
         $weeklyhourData = $this->Charts->weeklyhourAreaData($weeklyreports['id']);
+        $riskData = $this->Charts->riskData($weeklyreports['id'], $project_id);
         
         // Insert the data in to the charts, one by one
         // phaseChart
@@ -161,6 +165,48 @@ class ChartsController extends AppController
             'name' => 'Rejected',
             'data' => $reqData['rejected']
         );
+        
+        // risksProbChart
+        $risksProbChart->xAxis->categories = $weeklyreports['weeks'];
+        
+        foreach ($riskData as $risk){
+            
+            $risksProbChart->series[] = array(
+                'name' => $risk['name'],
+                'data' => $risk['probability']
+            );
+        
+        }
+        
+        
+        // risksImpactChart
+        $risksImpactChart->xAxis->categories = $weeklyreports['weeks'];
+        
+        foreach ($riskData as $risk){
+            
+            $risksImpactChart->series[] = array(
+                'name' => $risk['name'],
+                'data' => $risk['impact']
+            );
+        
+        }
+        
+        
+        // risksCombinedChart
+        $risksCombinedChart->xAxis->categories = $weeklyreports['weeks'];
+        
+        foreach ($riskData as $risk){
+            
+            $risksCombinedChart->series[] = array(
+                'name' => $risk['name'],
+                'data' => $risk['combined']
+            );
+        
+        }
+        
+        
+       
+        
               
         // chart for derived metrics
         $derivedChart->xAxis->categories = $weeklyreports['weeks'];
@@ -173,7 +219,7 @@ class ChartsController extends AppController
             'data' => $testcaseData['testsPassed']
         );
         // This sets the charts visible in the actual charts page "Charts/index.php"
-        $this->set(compact('phaseChart', 'reqChart', 'commitChart', 'testcaseChart', 'hoursChart', 'weeklyhourChart', 'hoursPerWeekChart', 'reqPercentChart', 'derivedChart'));
+        $this->set(compact('phaseChart', 'reqChart', 'commitChart', 'testcaseChart', 'hoursChart', 'weeklyhourChart', 'hoursPerWeekChart', 'reqPercentChart', 'risksProbChart', 'risksImpactChart', 'risksCombinedChart', 'derivedChart'));
 
     }
     // All the following functions are similar
@@ -195,7 +241,7 @@ class ChartsController extends AppController
     public function phaseChart() {
         $myChart = $this->Highcharts->createChart();
         $myChart->chart->renderTo = 'phasewrapper';
-        $myChart->chart->type = 'line';
+        $myChart->chart->type = 'area';
         $myChart->title = array(
             'text' => 'Phases',
             'y' => 20,
@@ -351,7 +397,7 @@ class ChartsController extends AppController
     public function testcaseChart() {
     	$myChart = $this->Highcharts->createChart();
     	$myChart->chart->renderTo = 'testcasewrapper';
-    	$myChart->chart->type = 'line';
+    	$myChart->chart->type = 'area';
     
     	$myChart->title = array(
         	'text' => 'Test cases',
@@ -503,6 +549,111 @@ class ChartsController extends AppController
         $myChart->plotOptions->area->marker->enabled = false;
         return $myChart;
     }
+    
+    
+    public function risksProbChart() {
+        $myChart = $this->Highcharts->createChart();
+        $myChart->chart->renderTo = 'risksprobrapper';
+        $myChart->chart->type = 'column';
+        $myChart->title = array(
+            'text' => 'Risks by Probability',
+            'y' => 20,
+            'align' => 'center',
+            'styleFont' => '18px Metrophobic, Arial, sans-serif',
+            'styleColor' => '#0099ff',
+        );
+        // body of the chart
+        $myChart->chart->width =  800;
+        $myChart->chart->height = 500;
+      
+        $myChart->chart->backgroundColor->linearGradient = array(0, 0, 0, 300);
+        $myChart->chart->backgroundColor->stops = array(array(0, 'rgb(217, 217, 255)'), array(1, 'rgb(255, 255, 255)'));
+        // legend below the charts
+        $myChart->legend->itemStyle = array('color' => '#222');
+        $myChart->legend->backgroundColor->linearGradient = array(0, 0, 0, 25);
+        $myChart->legend->backgroundColor->stops = array(array(0, 'rgb(217, 217, 217)'), array(1, 'rgb(255, 255, 255)'));
+        // labels to describe the content of axes
+        $myChart->xAxis->title->text = 'Week number';
+        $myChart->yAxis->title->text = 'Probability';
+        
+        // tooltips for the plotted graphs
+        $myChart->tooltip->formatter = $this->Highcharts->createJsExpr("function() {
+        return this.series.name +' <b>'+
+        Highcharts.numberFormat(this.y, 0) +'</b><br/>Week number '+ this.x;}");
+        $myChart->plotOptions->area->marker->enabled = false;
+        
+        return $myChart;
+    }
+    
+    public function risksImpactChart() {
+        $myChart = $this->Highcharts->createChart();
+        $myChart->chart->renderTo = 'risksimpactwrapper';
+        $myChart->chart->type = 'column';
+        $myChart->title = array(
+            'text' => 'Risks by Impact',
+            'y' => 20,
+            'align' => 'center',
+            'styleFont' => '18px Metrophobic, Arial, sans-serif',
+            'styleColor' => '#0099ff',
+        );
+        // body of the chart
+        $myChart->chart->width =  800;
+        $myChart->chart->height = 500;
+      
+        $myChart->chart->backgroundColor->linearGradient = array(0, 0, 0, 300);
+        $myChart->chart->backgroundColor->stops = array(array(0, 'rgb(217, 217, 255)'), array(1, 'rgb(255, 255, 255)'));
+        // legend below the charts
+        $myChart->legend->itemStyle = array('color' => '#222');
+        $myChart->legend->backgroundColor->linearGradient = array(0, 0, 0, 25);
+        $myChart->legend->backgroundColor->stops = array(array(0, 'rgb(217, 217, 217)'), array(1, 'rgb(255, 255, 255)'));
+        // labels to describe the content of axes
+        $myChart->xAxis->title->text = 'Week number';
+        $myChart->yAxis->title->text = 'Impact';
+        
+        // tooltips for the plotted graphs
+        $myChart->tooltip->formatter = $this->Highcharts->createJsExpr("function() {
+        return this.series.name +' <b>'+
+        Highcharts.numberFormat(this.y, 0) +'</b><br/>Week number '+ this.x;}");
+        $myChart->plotOptions->area->marker->enabled = false;
+        
+        return $myChart;
+    }
+    
+    public function risksCombinedChart() {
+        $myChart = $this->Highcharts->createChart();
+        $myChart->chart->renderTo = 'riskscombinedwrapper';
+        $myChart->chart->type = 'column';
+        $myChart->title = array(
+            'text' => 'Risks by Probability And Impact',
+            'y' => 20,
+            'align' => 'center',
+            'styleFont' => '18px Metrophobic, Arial, sans-serif',
+            'styleColor' => '#0099ff',
+        );
+        // body of the chart
+        $myChart->chart->width =  800;
+        $myChart->chart->height = 500;
+      
+        $myChart->chart->backgroundColor->linearGradient = array(0, 0, 0, 300);
+        $myChart->chart->backgroundColor->stops = array(array(0, 'rgb(217, 217, 255)'), array(1, 'rgb(255, 255, 255)'));
+        // legend below the charts
+        $myChart->legend->itemStyle = array('color' => '#222');
+        $myChart->legend->backgroundColor->linearGradient = array(0, 0, 0, 25);
+        $myChart->legend->backgroundColor->stops = array(array(0, 'rgb(217, 217, 217)'), array(1, 'rgb(255, 255, 255)'));
+        // labels to describe the content of axes
+        $myChart->xAxis->title->text = 'Week number';
+        $myChart->yAxis->title->text = 'Value';
+        
+        // tooltips for the plotted graphs
+        $myChart->tooltip->formatter = $this->Highcharts->createJsExpr("function() {
+        return this.series.name +' <b>'+
+        Highcharts.numberFormat(this.y, 0) +'</b><br/>Week number '+ this.x;}");
+        $myChart->plotOptions->area->marker->enabled = false;
+        
+        return $myChart;
+    }
+    
+    
 
     public function derivedChart(){
         

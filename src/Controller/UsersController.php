@@ -2,7 +2,9 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
-
+use Cake\Mailer\Email;
+use Cake\Routing\Router;
+use Cake\Filesystem\Folder;
 
 class UsersController extends AppController
 {
@@ -135,7 +137,59 @@ class UsersController extends AppController
         $this->set(compact('user'));
         $this->set('_serialize', ['user']);
     }
-        public function password()
+    
+    // Image upload functionality works, but there is a problem with permissions on the server. So this commented for now.
+//    public function photo()
+//    {    
+//        if ($this->request->is(['patch', 'post', 'put'])) {
+//            
+//            $action = $this->request->data['action'];
+//            
+//            if($action === 'upload'){
+//            
+//                $imageFile = $this->request->data['image'];
+//
+//                if($imageFile['size'] === 0){
+//                    $this->Flash->error(__('File not found.'));
+//                }else{
+//
+//                    $check = getimagesize($imageFile['tmp_name']);
+//
+//                    if(!$check){
+//                        $this->Flash->error(__('File is not an image.'));
+//                    }else{
+//
+//                        $userId = $this->Auth->user('id');
+//
+//                        $targetPath = WWW_ROOT . 'img' . DS . 'profile' . DS . 'user_' . $userId . '.png'; 
+//
+//                        if (move_uploaded_file($imageFile["tmp_name"], $targetPath)) {
+//
+//                            $this->Flash->success(__('The image has been uploaded.'));
+//                        } else {
+//
+//                            $this->Flash->error(__('The image can not be uploaded. Please, try again.'));
+//                        }
+//                    }
+//                }
+//            }else if ($action === 'delete'){
+//                
+//                $userId = $this->Auth->user('id');
+//
+//                $path = WWW_ROOT . 'img' . DS . 'profile' . DS . 'user_' . $userId . '.png'; 
+//                
+//                if(unlink($path)){
+//                    $this->Flash->success(__('The image has been deleted.'));
+//                }else{
+//                    $this->Flash->error(__('The image be deleted. Please, try again.'));
+//                }
+//                
+//            }
+//            
+//        }
+//    }
+    
+    public function password()
     {
         $user = $this->Users->get($this->Auth->user('id'), [
             'contain' => []
@@ -173,6 +227,119 @@ class UsersController extends AppController
     
     public function forgotpassword()
     {
+        if ($this->request->is('post')) {
+            
+            $email = $this->request->data['email'];
+            
+            $checkUser = $this->Users->find()->where(['email' => $email])->toArray();
+            
+            if(empty($checkUser)){
+                $this->Flash->error(__('This email does not belong to any user.'));
+            }else{
+                
+                $user = $checkUser[0];
+                
+                $key = $string = substr(md5(rand()), 0, 25);
+                
+                $user->password_key = $key;
+                
+                if($this->Users->save($user)){
+                    
+                    $sendMail = new Email();
+                
+                    $sendMail->from(['mmt@uta.fi' => 'MMT']);
+                    $sendMail->to($email);
+                    $sendMail->subject('Password reset');
+                    $sendMail->emailFormat('html');
+                    
+                    if($sendMail->send($this->prepareEmail($key))){
+                        $this->Flash->success(__('Key for reseting your password has been sent to your email.'));
+                        
+                        return $this->redirect(['controller' => 'Projects','action' => 'index']);
+                    }else{
+                        $this->Flash->error(__('An error occured when sending the email, please try again.'));
+                    }
+          
+                }else{
+                    $this->Flash->error(__('An error occured when sending the email, please try again.'));
+                }
+                
+                
+            }
+            
+        }
+    }
+    
+    public function resetpassword($key = null)
+    {
+        $showForm = false;
+
+        if($this->request->is(['patch', 'post', 'put'])){
+            
+            $showForm = true;
+            
+            $user = $this->Users->find()->where(['password_key' => $key]);
+            
+            if($user->first() === null){
+                    $this->Flash->error(__('Invalid key.'));
+ 
+            }else{
+                
+                $user = $user->first();
+                
+                if ($this->request->data['password'] == $this->request->data['checkPassword']) {
+                    
+                    if(strlen($this->request->data['password']) < 8){
+                        
+                        $this->Flash->error(__('The password has to be 8 characters long'));
+
+                    }else{
+                        
+                        $user->password = $this->request->data['password'];
+                        $user->password_key = null;
+                    
+                        if ($this->Users->save($user)) {
+                            $this->Flash->success(__('Your password has been updated.'));
+                            
+                            $showForm = false;
+                            
+                            return $this->redirect(['controller' => 'Users', 'action' => 'login']);
+                                                 
+                        } 
+                        else {
+                            $this->Flash->error(__('The user could not be saved. Please, try again.'));
+
+                        }                   
+                    }
+                                  
+                }else{
+                    $this->Flash->error(__('Passwords are not a match. Try again, please.'));
+                    
+                    $showForm = true;
+                }
+                
+            }
+            
+            
+            
+        }else{       
+            if($key == null){
+                $this->Flash->error(__('Invalid key.'));
+            }else{
+                $getUser = $this->Users->find()->where(['password_key' => $key]);
+
+                if($getUser->first() === null){
+                    $this->Flash->error(__('Invalid key.'));
+                }else{
+
+                    $user = $getUser->first();
+                    
+                    $showForm = true;
+                }
+            }
+        }
+        
+        $this->set(compact('showForm','key'));
         
     }
     
@@ -181,6 +348,7 @@ class UsersController extends AppController
     {
         $this->Auth->allow(['signup']);
         $this->Auth->allow(['forgotpassword']);
+        $this->Auth->allow(['resetpassword']);
     }
     
     public function isAuthorized($user)
@@ -198,11 +366,22 @@ class UsersController extends AppController
         
         // All registered users can edit their own profile and logout
         if ($this->request->action === 'logout' || $this->request->action === 'editprofile' 
-                || $this->request->action === 'password' ) {
+                || $this->request->action === 'password' || $this->request->action === 'photo' ) {
             return true;
         }
         
         
         return parent::isAuthorized($user);
+    }
+    
+    public function prepareEmail($key)
+    {
+        $url = Router::url(['controller' => 'Users','action' => 'resetpassword',$key], true);
+        
+        $message = '<p>In order to reset your password, visit this link:</p>';
+        
+        $message .= '<p><a href="'.$url.'">'.$url.'</a></p>';
+        
+        return $message;
     }
 }

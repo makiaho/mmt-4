@@ -242,7 +242,35 @@
                 </tr>
                 <?php endforeach; ?>
             </table>
+        
         <?php endif; ?>
+        
+        
+        <?php if (!empty($risks)): ?>
+        
+        <h4><?= __('Risks') ?></h4>
+        
+        <table cellpadding="0" cellspacing="0">
+                <tr>
+                    <th><?= __('Risk') ?></th>                 
+                    <th><?= __('Impact') ?></th>
+                    <th><?= __('Probability') ?></th>
+                </tr>
+                
+        <?php foreach($risks as $risk): ?>
+          
+                <tr>
+                    <td><?= h($risk->description) ?></td>
+                    <td><?= h($risk->impact) ?></td>
+                    <td><?= h($risk->probability) ?></td>
+                </tr>   
+                
+        <?php endforeach; ?>
+                
+        </table>
+
+        <?php endif; ?>
+        
 		<h4><?= __('Comments') ?></h4>
 		<?php
 			// query for comments

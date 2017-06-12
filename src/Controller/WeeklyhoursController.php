@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Mailer\Email;
 use Cake\I18n\Time;
 use Cake\ORM\TableRegistry;
 
@@ -111,6 +112,7 @@ class WeeklyhoursController extends AppController
                     
                     // save all the parts of the weeklyreport that are saved in the session
                     $current_metrics = $this->request->session()->read('current_metrics');
+                    $current_risks = $this->request->session()->read('current_risks');
 					// fetch all supervisors
 					$svquery = TableRegistry::get('Members')->find()
 								->select(['user_id'])
@@ -118,7 +120,7 @@ class WeeklyhoursController extends AppController
 								->where(['project_role =' => 'supervisor'])
 								->toArray();
                     
-                    if($result = $this->Weeklyhours->saveSessionReport($current_weeklyreport, $current_metrics, $weeklyhours)){
+                    if($result = $this->Weeklyhours->saveSessionReport($current_weeklyreport, $current_metrics, $current_risks, $weeklyhours)){
 						// ID of last weeklyreport
 						// when a comment is added, also add a notification to database; so for that we'll fetch the maximum (= most recent) comment id
 						$query = TableRegistry::get('Weeklyreports')->find();
@@ -135,12 +137,56 @@ class WeeklyhoursController extends AppController
                                                        $connection->insert('newreports',['user_id' => $svquery[$i]->user_id, 'weeklyreport_id' => $maxid]);
                                                     
 						}
-						
+			
+                        //This is for sending the report notification to slack                        
+                        $slackController = new SlackController();
+
+                        $slackData = ['type' => 'report','details' => ['report_id' => $maxid]]; 
+
+                        $slackResult = $slackController->sendMessage($project_id, $slackData);                        
+                                                
+                                                
                         $this->Flash->success(__('Weeklyreport saved'));
+                        
+                        if($slackResult == 'success'){
+                            $this->Flash->success(__('The report notification has been sent to slack.'));
+                        }else if ($slackResult == 'fail'){
+                            $this->Flash->error(__('The report notification could not be sent to slack.'));
+                        }
+                        
+                        //This is for sending report as email to clients
+                        $report = TableRegistry::get('Weeklyreports')->get($maxid);
+                        
+                        $clients = TableRegistry::get('Members')->find('all',[
+                            'conditions' => ['project_id' => $report->project_id, 'project_role' => 'client'],
+                            'contain' => ['Users']
+                        ]);
+
+                        $emailReport = (new WeeklyreportsController())->preparemail($maxid);
+                        $projectName = $this->request->session()->read('selected_project')['project_name'];
+                        $reportDesc = 'Report for week '.$report->week;
+                        
+                        foreach($clients as $client){
+                            
+                            $clientEmail = $client->user->email;
+                            
+                            $sendMail = new Email();
+                
+                            $sendMail->from(['mmt@uta.fi' => 'MMT']);
+                            $sendMail->to($clientEmail);
+                            $sendMail->subject($projectName.' - '.$reportDesc);
+                            $sendMail->emailFormat('html');
+                            
+                            $sendMail->send($emailReport);
+                            
+                        }
+                        
+                        
                         
                         $this->request->session()->delete('current_weeklyreport');
                         $this->request->session()->delete('current_metrics');
                         $this->request->session()->delete('current_weeklyhours');
+                        $this->request->session()->delete('current_risks');
                         
                         return $this->redirect(
                             ['controller' => 'Weeklyreports', 'action' => 'index']
