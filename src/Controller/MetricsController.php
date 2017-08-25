@@ -349,10 +349,10 @@ class MetricsController extends AppController
         
         $names[1] = 'Current phase';
         $names[2] = 'Total number of planned phases';
-        $names[3] = 'New requirements';
-        $names[4] = 'Requirements in progress';
-        $names[5] = 'Closed requirements';
-        $names[6] = 'Rejected requirements';
+        $names[3] = 'Product backlog'; //reqNew
+        $names[4] = 'Sprint backlog'; //reqProgress
+        $names[5] = 'Done'; //reqClosed
+        $names[6] = 'Rejected'; //reqRejected
         $names[7] = 'Commits to the source code repository';
         $names[8] = 'Passed test cases';
         $names[9] = 'Total number of test cases';
